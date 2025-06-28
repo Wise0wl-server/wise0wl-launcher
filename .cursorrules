@@ -1,0 +1,52 @@
+# Cursor Rules for Wise0wl Launcher
+
+## Project Overview
+This is a Tauri application with React frontend using Material UI. The project uses:
+- Tauri (Rust backend)
+- React + TypeScript (frontend)
+- Material UI (UI component library)
+- Vite (build tool)
+
+## Quick Reference
+- **TypeScript/React**: See `.cursor/rules/typescript.md`
+- **Rust/Tauri**: See `.cursor/rules/rust.md`
+- **UI Design/Material UI**: See `.cursor/rules/ui-design.md`
+- **AI Behavior**: See `.cursor/rules/ai-behavior.md`
+- **Application Overview**: See `.cursor/rules/application-overview.md`
+
+## Key Guidelines
+
+### Material UI Usage
+- Use [Material UI](https://mui.com/material-ui/) as the primary UI library
+- Install: `npm install @mui/material @emotion/react @emotion/styled`
+- Follow Material Design principles
+- Use MUI's theming system for consistent styling
+- Implement responsive design with MUI breakpoints
+
+### Code Style
+- Use TypeScript for all frontend code
+- Follow Rust conventions for backend code
+- Use functional components with hooks
+- Implement proper error handling
+- Add meaningful comments for complex logic
+
+### Security & Performance
+- Follow Tauri security model
+- Validate all user inputs
+- Use proper authentication handling
+- Optimize bundle size and performance
+- Implement proper loading states
+
+### User Experience
+- Create intuitive, modern interfaces
+- Ensure accessibility compliance
+- Provide clear feedback and notifications
+- Support both light and dark themes
+- Implement responsive design
+
+## AI Assistant Instructions
+- Always consider the Minecraft modpack launcher context
+- Suggest appropriate Material UI components
+- Consider both frontend and backend implications
+- Provide explanations for complex solutions
+- Ask clarifying questions when needed 
