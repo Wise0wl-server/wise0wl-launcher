@@ -12,6 +12,7 @@ use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
 use std::fs;
 use uuid;
+use std::env;
 
 mod minecraft;
 mod modpack;
@@ -23,11 +24,30 @@ use minecraft::MinecraftLauncher;
 use modpack::Modpack;
 use settings::Settings;
 
-const MICROSOFT_CLIENT_ID: &str = "6ff71649-4b80-4545-8552-435c570bd6e8";
+// Load environment variables
+fn load_env() {
+    dotenv::dotenv().ok();
+}
+
+fn get_microsoft_client_id() -> String {
+    env::var("MICROSOFT_CLIENT_ID")
+        .unwrap_or_else(|_| "YOUR_CLIENT_ID_HERE".to_string())
+}
+
+fn get_oauth_redirect_uri() -> String {
+    env::var("OAUTH_REDIRECT_URI")
+        .unwrap_or_else(|_| "wise0wl-oauth://callback".to_string())
+}
+
+fn get_oauth_scopes() -> String {
+    env::var("OAUTH_SCOPES")
+        .unwrap_or_else(|_| "XboxLive.signin offline_access".to_string())
+}
 
 fn check_oauth_credentials() -> Result<(), String> {
-    if MICROSOFT_CLIENT_ID == "YOUR_CLIENT_ID_HERE" {
-        return Err("Microsoft OAuth credentials not configured. Please update MICROSOFT_CLIENT_ID in src-tauri/src/lib.rs".to_string());
+    let client_id = get_microsoft_client_id();
+    if client_id == "YOUR_CLIENT_ID_HERE" {
+        return Err("Microsoft OAuth credentials not configured. Please set MICROSOFT_CLIENT_ID in your .env file".to_string());
     }
     Ok(())
 }
@@ -237,8 +257,8 @@ pub struct MicrosoftAuthUrl {
 #[tauri::command]
 async fn get_microsoft_auth_url() -> Result<MicrosoftAuthUrl, String> {
     check_oauth_credentials()?;
-    let redirect_uri = "wise0wl-oauth://callback";
-    let scopes = "XboxLive.signin offline_access";
+    let redirect_uri = get_oauth_redirect_uri();
+    let scopes = get_oauth_scopes();
     // Generate PKCE code verifier and challenge
     let code_verifier = generate_code_verifier();
     let code_challenge = generate_code_challenge(&code_verifier);
@@ -256,7 +276,7 @@ async fn get_microsoft_auth_url() -> Result<MicrosoftAuthUrl, String> {
         code_challenge_method=S256&\
         response_mode=query&\
         state={}",
-        MICROSOFT_CLIENT_ID, redirect_uri, scopes, code_challenge, state
+        get_microsoft_client_id(), redirect_uri, scopes, code_challenge, state
     );
     Ok(MicrosoftAuthUrl { url: auth_url, state })
 }
@@ -269,11 +289,15 @@ async fn handle_microsoft_callback(code: String, state: String) -> Result<AuthTo
     let token_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
     // Get the code verifier that was stored when generating the auth URL
     let code_verifier = get_and_remove_pkce_verifier(&state).ok_or("No code verifier found. Please try logging in again.")?;
+    let client_id = get_microsoft_client_id();
+    let redirect_uri = get_oauth_redirect_uri();
+    let grant_type = "authorization_code".to_string();
+    
     let token_params = [
-        ("client_id", MICROSOFT_CLIENT_ID),
+        ("client_id", &client_id),
         ("code", &code),
-        ("redirect_uri", "wise0wl-oauth://callback"),
-        ("grant_type", "authorization_code"),
+        ("redirect_uri", &redirect_uri),
+        ("grant_type", &grant_type),
         ("code_verifier", &code_verifier),
     ];
     println!("Exchanging code for token...");
@@ -511,6 +535,9 @@ async fn logout_user(uuid: String) -> Result<(), String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Load environment variables
+    load_env();
+    
     // Initialize tokens from persistent storage
     initialize_tokens();
     

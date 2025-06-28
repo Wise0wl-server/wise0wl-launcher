@@ -18,6 +18,25 @@ A Minecraft launcher with modpack support built with Tauri and React.
 - Auto-downloader for Fabric, Forge, and NeoForge
 - Cross-platform support (Windows, macOS, Linux)
 
+## Environment Setup
+
+### 1. Configure Environment Variables
+
+1. Copy the example environment file:
+   ```bash
+   cd src-tauri
+   cp .env.example .env
+   ```
+
+2. Edit the `.env` file and set your configuration:
+   ```env
+   MICROSOFT_CLIENT_ID=your-actual-client-id
+   OAUTH_REDIRECT_URI=wise0wl-oauth://callback
+   OAUTH_SCOPES=XboxLive.signin offline_access
+   ```
+
+**Important**: Never commit your `.env` file to version control. It's already included in `.gitignore`.
+
 ## Microsoft OAuth Setup
 
 To enable Microsoft authentication, you need to register an Azure AD application:
@@ -40,16 +59,8 @@ To enable Microsoft authentication, you need to register an Azure AD application
 
 After registration, note down:
 - **Application (client) ID**
-- **Directory (tenant) ID**
 
-### 3. Create Client Secret
-
-1. Go to **Certificates & secrets**
-2. Click **New client secret**
-3. Add a description and choose expiration
-4. **Important**: Copy the secret value immediately (you won't see it again)
-
-### 4. Configure Permissions
+### 3. Configure Permissions
 
 1. Go to **API permissions**
 2. Click **Add a permission**
@@ -61,14 +72,12 @@ After registration, note down:
 6. Click **Add permissions**
 7. Click **Grant admin consent**
 
-### 5. Update Application Code
+### 4. Update Environment Configuration
 
-1. Open `src-tauri/src/lib.rs`
-2. Find the OAuth configuration section
-3. Replace the placeholder values:
-   ```rust
-   const MICROSOFT_CLIENT_ID: &str = "your-actual-client-id";
-   const MICROSOFT_CLIENT_SECRET: &str = "your-actual-client-secret";
+1. Open `src-tauri/.env`
+2. Replace `YOUR_MICROSOFT_CLIENT_ID_HERE` with your actual client ID:
+   ```env
+   MICROSOFT_CLIENT_ID=your-actual-client-id
    ```
 
 ## Development

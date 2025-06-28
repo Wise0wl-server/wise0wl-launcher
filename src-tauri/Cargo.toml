@@ -41,4 +41,6 @@ rand = "0.8"
 base64 = "0.21"
 uuid = { version = "1", features = ["v4"] }
 futures = "0.3"
+# For environment variables
+dotenv = "0.15"
 
